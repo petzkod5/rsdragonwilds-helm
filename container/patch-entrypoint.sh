@@ -10,4 +10,4 @@ fi
     echo 'Unsupported Jagex entrypoint: expected one download call without a hook' >&2
     exit 1
 }
-sed -i -e '\|^download$|a /opt/rsdwapi/prepare-server.sh' -e 's/-Port "${RSDW_PORT}"/-Port="${RSDW_PORT}"/' "$entry"
+sed -i -e '\|^download$|a /opt/rsdwapi/prepare-server.sh' -e "s/-Port \"\${RSDW_PORT}\"/-Port=\"\${RSDW_PORT}\"/" "$entry"
