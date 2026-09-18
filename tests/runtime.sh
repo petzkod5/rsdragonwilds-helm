@@ -29,6 +29,7 @@ docker run -d --name "$container" --publish 7888:7888/udp \
     --env RSDW_WORLD_NAME=runtime-smoke \
     --env RSDW_PASSWORD= \
     --env RSDW_ADMIN_PASSWORD= \
+    --env RSDWAPI_ENABLED=false \
     --env RSDW_PORT=7888 \
     "$image" >/dev/null
 
