@@ -57,11 +57,17 @@
       "additionalProperties": false,
       "required": [
         "port",
+        "beaconPort",
         "env",
         "extraEnv"
       ],
       "properties": {
         "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "beaconPort": {
           "type": "integer",
           "minimum": 1,
           "maximum": 65535

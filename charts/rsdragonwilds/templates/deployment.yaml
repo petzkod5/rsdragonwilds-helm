@@ -68,8 +68,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - {name: game, containerPort: {{ .Values.server.port }}, protocol: UDP}
+            - {name: beacon, containerPort: {{ .Values.server.beaconPort }}, protocol: UDP}
           env:
             - {name: RSDW_PORT, value: {{ .Values.server.port | quote }}}
+            - {name: RSDW_BEACON_PORT, value: {{ .Values.server.beaconPort | quote }}}
             - {name: RSDWAPI_ENABLED, value: {{ .Values.api.enabled | quote }}}
             - {name: RSDWAPI_PORT, value: {{ .Values.api.port | quote }}}
             - {name: RSDWAPI_LOGGING, value: {{ .Values.api.logging.enabled | quote }}}
