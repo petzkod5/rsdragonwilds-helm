@@ -6,6 +6,7 @@ image:
 
 server:
   port: 7777 # Sets RSDW_PORT and the UDP target port.
+  beaconPort: 8888 # Sets RSDW_BEACON_PORT; also published on the Service.
   env:
     RSDW_OWNER_ID: "" # Required EOS player ID, or supply through extraEnv.
     RSDW_SERVER_NAME: Dragonwilds

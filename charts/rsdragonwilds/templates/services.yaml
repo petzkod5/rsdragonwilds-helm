@@ -20,6 +20,10 @@ spec:
       {{- with .Values.service.nodePort }}
       nodePort: {{ . }}
       {{- end }}
+    - name: beacon
+      port: {{ .Values.server.beaconPort }}
+      targetPort: beacon
+      protocol: UDP
 {{- if .Values.metrics.enabled }}
 ---
 apiVersion: v1

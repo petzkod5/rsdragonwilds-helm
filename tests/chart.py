@@ -46,6 +46,8 @@ game = pod(documents)["containers"][0]
 env = {entry["name"]: entry for entry in game["env"]}
 assert env["RSDW_PASSWORD"]["value"] == ""
 assert env["RSDW_PORT"]["value"] == "7777"
+assert env["RSDW_BEACON_PORT"]["value"] == "8888"
+assert {(p["name"], p["port"], p["protocol"]) for p in resource(documents, "Service")["spec"]["ports"]} == {("game", 7777, "UDP"), ("beacon", 8888, "UDP")}
 assert len(env) == len(game["env"])
 assert pod(documents)["containers"][1]["image"].endswith(":v0.8.0")
 config = yaml.safe_load(resource(documents, "ConfigMap")["data"]["config.yml"])
@@ -53,11 +55,12 @@ assert config["modules"]["players"]["metrics"][0]["path"] == "{.count}"
 assert config["modules"]["health"]["http_client_config"]["authorization"]["credentials_file"] == "/run/rsdwapi/token"
 
 secret = {"name": "RSDW_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "passwords", "key": "world"}}}
-documents = render({"server": {"port": 8888, "extraEnv": [secret]}})
+documents = render({"server": {"port": 8888, "beaconPort": 8889, "extraEnv": [secret]}})
 game = pod(documents)["containers"][0]
 assert [entry for entry in game["env"] if entry["name"] == "RSDW_PASSWORD"] == [secret]
 assert game["ports"][0]["containerPort"] == 8888
 assert next(e for e in game["env"] if e["name"] == "RSDW_PORT")["value"] == "8888"
+assert next(e for e in game["env"] if e["name"] == "RSDW_BEACON_PORT")["value"] == "8889"
 render({"server": {"env": {"RSDW_OWNER_ID": ""}, "extraEnv": [dict(secret, name="RSDW_OWNER_ID")]}})
 
 ini = "[Server]\nServerName=${RSDW_SERVER_NAME}\n+Repeated=one\n+Repeated=two\n"
@@ -96,6 +99,8 @@ for values in [
     {"server": {"env": {"LD_PRELOAD": "/bad.so"}}},
     {"server": {"env": {"RSDW_SERVER_NAME": "bad\nname"}}},
     {"server": {"port": 65536}},
+    {"server": {"port": 8888}},
+    {"server": {"env": {"RSDW_BEACON_PORT": "9999"}}},
     {"saveSeed": {"existingClaim": "seed"}},
     {"saveSeed": {"existingClaim": "seed", "path": "../world.sav"}},
     {"saveSeed": {"existingClaim": "seed", "path": "/world.sav"}},

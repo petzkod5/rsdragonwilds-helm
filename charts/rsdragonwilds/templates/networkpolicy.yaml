@@ -11,6 +11,7 @@ spec:
   ingress:
     - ports:
         - {protocol: UDP, port: {{ .Values.server.port }}}
+        - {protocol: UDP, port: {{ .Values.server.beaconPort }}}
     {{- with .Values.metrics.networkPolicy.allowedPeers }}
     - from:
         {{- toYaml . | nindent 8 }}

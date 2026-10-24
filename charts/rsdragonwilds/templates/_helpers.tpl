@@ -24,7 +24,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 {{- $env := mergeOverwrite (deepCopy .Values.server.env) $extra -}}
 {{- range $name, $value := $env -}}
-  {{- if or (has $name (list "RSDW_PORT" "LD_PRELOAD" "STEAMAPPDIR" "GAMELIFT")) (hasPrefix "RSDWAPI_" $name) -}}
+  {{- if or (has $name (list "RSDW_PORT" "RSDW_BEACON_PORT" "LD_PRELOAD" "STEAMAPPDIR" "GAMELIFT")) (hasPrefix "RSDWAPI_" $name) -}}
     {{- fail (printf "%s is chart-owned" $name) -}}
   {{- end -}}
 {{- end -}}
@@ -35,6 +35,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if and .Values.metrics.enabled (not .Values.api.enabled) -}}{{ fail "metrics.enabled requires api.enabled" }}{{- end -}}
 {{- if and (not .Values.metrics.enabled) (or .Values.metrics.serviceMonitor.enabled .Values.metrics.networkPolicy.enabled) -}}{{ fail "ServiceMonitor and metrics NetworkPolicy require metrics.enabled" }}{{- end -}}
 {{- if and .Values.metrics.enabled (eq (int .Values.api.port) 7979) -}}{{ fail "API port conflicts with exporter port 7979" }}{{- end -}}
+{{- if eq (int .Values.server.port) (int .Values.server.beaconPort) -}}{{ fail "server.beaconPort must differ from server.port" }}{{- end -}}
 {{- if ne (empty .Values.saveSeed.existingClaim) (empty .Values.saveSeed.path) -}}{{ fail "saveSeed requires both existingClaim and path" }}{{- end -}}
 {{- if regexMatch "(^|/)\\.\\.(/|$)" .Values.saveSeed.path -}}{{ fail "saveSeed.path cannot contain traversal" }}{{- end -}}
 {{- if and .Values.saveSeed.existingClaim (eq .Values.saveSeed.existingClaim (include "rsdw.claim" .)) -}}{{ fail "saveSeed must use a different PVC from the server" }}{{- end -}}
